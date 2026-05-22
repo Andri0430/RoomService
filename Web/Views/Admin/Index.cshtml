@@ -1,0 +1,9 @@
+@model Web.ViewModels.UserDashboardViewModel
+
+@{
+    ViewData["Title"] = "Pengguna";
+    Layout = "~/Views/Shared/_Layout.Admin.cshtml";
+    ViewData["ActiveMenu"] = "Pengguna";
+}
+
+@await Html.PartialAsync("_UserTabContainerPartial", Model)

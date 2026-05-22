@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RoomService Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+
+    <div class="d-flex" style="min-height: 100vh;">
+
+        @* Sidebar *@
+        @await Html.PartialAsync("_SideBar.Admin")
+
+        @* Main Content *@
+        <div class="d-flex flex-column flex-grow-1">
+
+            @* Header *@
+            @await Html.PartialAsync("_Header")
+
+            @* Content Area *@
+            <main class="flex-grow-1 p-4">
+                @if (TempData["AlertMessage"] != null)
+                {
+                    <div class="alert alert-@TempData["AlertType"] alert-dismissible fade show" role="alert">
+                        @TempData["AlertMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                <div id="partial-content">
+                    @RenderBody()
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

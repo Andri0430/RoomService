@@ -1,0 +1,465 @@
+@model List<Application.Dtos.UserDto>
+
+<div class="mb-3">
+
+    <h6 class="mb-1 fw-semibold">
+        Riwayat Pengguna Dihapus
+    </h6>
+
+    <div class="small text-muted">
+        Daftar pengguna yang sudah dihapus secara nonaktif.
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- SEARCH -->
+<!-- ===================================================== -->
+
+<div class="row g-2 align-items-center mb-3">
+
+    <div class="col-md-5 col-lg-4">
+
+        <div class="input-group input-group-sm">
+
+            <span class="input-group-text">
+                Cari
+            </span>
+
+            <input type="search"
+                   id="searchDeletedUsers"
+                   class="form-control"
+                   placeholder="Cari riwayat..." />
+
+        </div>
+
+    </div>
+
+    <div class="col-md text-md-end">
+
+        <span id="infoDeletedUsers"
+              class="small text-muted">
+        </span>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- TABLE -->
+<!-- ===================================================== -->
+
+<div class="table-responsive">
+
+    <table id="tableDeletedUsers"
+           class="table table-hover align-middle w-100">
+
+        <thead class="table-light">
+
+            <tr>
+                <th>#</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>No. HP</th>
+                <th>Role</th>
+                <th>Tanggal Diperbarui</th>
+                <th class="text-center">Aksi</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var (user, index) in Model.Select((item, index) => (item, index + 1)))
+            {
+                <tr>
+
+                    <td class="text-muted">
+                        @index
+                    </td>
+
+                    <td class="fw-medium">
+                        @user.Name
+                    </td>
+
+                    <td>
+                        @user.Email
+                    </td>
+
+                    <td>
+                        @user.PhoneNumber
+                    </td>
+
+                    <td>
+
+                        <span class="badge rounded-pill text-bg-secondary">
+                            @user.Role
+                        </span>
+
+                    </td>
+
+                    <td>
+                        @(user.UpdatedAt?.ToString("dd MMM yyyy HH:mm") ?? "-")
+                    </td>
+
+                    <td class="text-center">
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger btn-hard-delete"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalHardDeleteUser"
+                                data-id="@user.Id"
+                                data-name="@user.Name">
+
+                            Hapus Permanen
+                        </button>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- MODAL HARD DELETE -->
+<!-- ===================================================== -->
+
+<div class="modal fade"
+     id="modalHardDeleteUser"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="formHardDeleteUser">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Hapus Permanen
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body text-center">
+
+                    <input type="hidden"
+                           id="hardDeleteId"
+                           name="id" />
+
+                    <p class="mb-0">
+
+                        Hapus permanen pengguna
+                        <strong id="hardDeleteName"></strong> ?
+
+                    </p>
+
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button"
+                            class="btn btn-light"
+                            data-bs-dismiss="modal">
+
+                        Batal
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-danger">
+
+                        Hapus Permanen
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    let deletedUserRows = [];
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        initializeDeletedUserSearch();
+
+        initializeHardDeleteModal();
+
+        handleHardDeleteUser();
+    });
+
+
+
+    // =====================================================
+    // SEARCH
+    // =====================================================
+
+    function initializeDeletedUserSearch() {
+
+        const table =
+            document.getElementById('tableDeletedUsers');
+
+        const search =
+            document.getElementById('searchDeletedUsers');
+
+        const info =
+            document.getElementById('infoDeletedUsers');
+
+        if (!table || !search || !info)
+            return;
+
+        deletedUserRows = Array.from(
+            table.querySelectorAll('tbody tr')
+        );
+
+        refreshDeletedUserTable();
+
+        search.addEventListener(
+            'input',
+            refreshDeletedUserTable
+        );
+    }
+
+
+
+    function refreshDeletedUserTable() {
+
+        const search =
+            document.getElementById('searchDeletedUsers');
+
+        const info =
+            document.getElementById('infoDeletedUsers');
+
+        const keyword =
+            search.value
+                .trim()
+                .toLowerCase();
+
+        let visibleRows = 0;
+
+        deletedUserRows.forEach(row => {
+
+            const isMatch =
+                row.innerText
+                    .toLowerCase()
+                    .includes(keyword);
+
+            row.classList.toggle(
+                'd-none',
+                !isMatch
+            );
+
+            if (isMatch)
+                visibleRows++;
+        });
+
+        info.textContent =
+            `${visibleRows} dari ${deletedUserRows.length} data`;
+    }
+
+
+
+    // =====================================================
+    // HARD DELETE MODAL
+    // =====================================================
+
+    function initializeHardDeleteModal() {
+
+        const modal =
+            document.getElementById('modalHardDeleteUser');
+
+        modal.addEventListener(
+            'show.bs.modal',
+            event => {
+
+                const button =
+                    event.relatedTarget;
+
+                hardDeleteId.value =
+                    button.dataset.id;
+
+                hardDeleteName.textContent =
+                    button.dataset.name;
+            }
+        );
+    }
+
+
+
+    // =====================================================
+    // AJAX HELPER
+    // =====================================================
+
+    async function submitAjax(url, formData) {
+
+        try {
+
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+
+            return await response.json();
+        }
+        catch {
+
+            return {
+                success: false,
+                message: 'Terjadi kesalahan server'
+            };
+        }
+    }
+
+
+
+    // =====================================================
+    // HARD DELETE USER
+    // =====================================================
+
+    function handleHardDeleteUser() {
+
+        const form =
+            document.getElementById('formHardDeleteUser');
+
+        form.addEventListener(
+            'submit',
+            async function (e) {
+
+                e.preventDefault();
+
+                const formData =
+                    new FormData(form);
+
+                const result =
+                    await submitAjax(
+                        '/Admin/HardDeleteUser',
+                        formData
+                    );
+
+                if (!result.success) {
+
+                    alert(result.message);
+                    return;
+                }
+
+                alert(result.message);
+
+
+
+                // =========================================
+                // REMOVE ROW TANPA RELOAD
+                // =========================================
+
+                const deletedId =
+                    hardDeleteId.value;
+
+                const button =
+                    document.querySelector(
+                        `.btn-hard-delete[data-id="${deletedId}"]`
+                    );
+
+                if (button) {
+
+                    const row =
+                        button.closest('tr');
+
+                    row.remove();
+                }
+
+
+
+                // =========================================
+                // REFRESH TABLE
+                // =========================================
+
+                deletedUserRows = Array.from(
+                    document.querySelectorAll(
+                        '#tableDeletedUsers tbody tr'
+                    )
+                );
+
+                refreshDeletedUserTable();
+
+                const modal =
+                    bootstrap.Modal.getInstance(
+                        document.getElementById(
+                            'modalHardDeleteUser'
+                        )
+                    );
+
+                modal.hide();
+            }
+        );
+    }
+
+</script>
+
+<script>
+    (function () {
+        function setupReliableDeletedUserSearch() {
+            const table = document.getElementById('tableDeletedUsers');
+            const search = document.getElementById('searchDeletedUsers');
+            const info = document.getElementById('infoDeletedUsers');
+
+            if (!table || !search || !info) {
+                return;
+            }
+
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+            function refreshTable() {
+                const keyword = search.value.trim().toLowerCase();
+                let visibleRows = 0;
+
+                rows.forEach(row => {
+                    const isMatch = row.innerText.toLowerCase().includes(keyword);
+                    row.classList.toggle('d-none', !isMatch);
+
+                    if (isMatch) {
+                        visibleRows++;
+                    }
+                });
+
+                info.textContent = `${visibleRows} dari ${rows.length} data`;
+            }
+
+            search.oninput = refreshTable;
+            refreshTable();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupReliableDeletedUserSearch);
+        } else {
+            setupReliableDeletedUserSearch();
+        }
+    })();
+</script>

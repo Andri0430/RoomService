@@ -1,0 +1,8 @@
+@model List<Application.Dtos.HistoryReservationRoomDto>
+
+<div class="mb-3">
+    <h6 class="mb-1 fw-semibold">History Selesai Reservasi</h6>
+    <div class="small text-muted">Reservasi dengan tanggal booking sebelum hari ini.</div>
+</div>
+
+@await Html.PartialAsync("_ReservationRoomTablePartial", (Model, "tableFinishedReservations", "searchFinishedReservations", "infoFinishedReservations", "Cari history..."))

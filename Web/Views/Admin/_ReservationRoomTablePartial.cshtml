@@ -1,0 +1,84 @@
+@model (List<Application.Dtos.HistoryReservationRoomDto> Reservations, string TableId, string SearchId, string InfoId, string SearchPlaceholder)
+
+<div class="row g-2 align-items-center mb-3">
+    <div class="col-md-5 col-lg-4">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Cari</span>
+            <input id="@Model.SearchId" type="search" class="form-control" placeholder="@Model.SearchPlaceholder" />
+        </div>
+    </div>
+    <div class="col-md text-md-end">
+        <span id="@Model.InfoId" class="small text-muted"></span>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="@Model.TableId" class="table table-hover align-middle w-100 reservation-table" data-search-id="@Model.SearchId" data-info-id="@Model.InfoId">
+        <thead class="table-light">
+            <tr>
+                <th>Id</th>
+                <th>Nama Ruangan</th>
+                <th>Email Pengguna</th>
+                <th>Tanggal Reservasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in Model.Reservations)
+            {
+                <tr>
+                    <td class="text-muted">@reservation.Id</td>
+                    <td class="fw-medium">@reservation.RoomName</td>
+                    <td>@reservation.UserEmail</td>
+                    <td>@reservation.BookedDateReservation.ToString("dd MMM yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function setupReservationTableFilter(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) {
+            return;
+        }
+
+        const search = document.getElementById(table.dataset.searchId);
+        const info = document.getElementById(table.dataset.infoId);
+
+        if (!search || !info) {
+            return;
+        }
+
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+        function refreshTable() {
+            const keyword = search.value.trim().toLowerCase();
+            let visibleRows = 0;
+
+            rows.forEach(row => {
+                const isMatch = row.innerText.toLowerCase().includes(keyword);
+                row.classList.toggle('d-none', !isMatch);
+
+                if (isMatch) {
+                    visibleRows++;
+                }
+            });
+
+            info.textContent = `${visibleRows} dari ${rows.length} data`;
+        }
+
+        search.addEventListener('input', refreshTable);
+        refreshTable();
+    }
+
+    function initializeReservationTableScript() {
+        setupReservationTableFilter('@Model.TableId');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeReservationTableScript);
+    } else {
+        initializeReservationTableScript();
+    }
+</script>

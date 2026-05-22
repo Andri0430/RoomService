@@ -1,0 +1,57 @@
+@model Web.ViewModels.RoomDashboardViewModel
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <ul class="nav nav-tabs card-header-tabs" id="roomTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active"
+                        id="daftar-ruangan-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#daftar-ruangan"
+                        type="button"
+                        role="tab"
+                        aria-controls="daftar-ruangan"
+                        aria-selected="true">
+                    Daftar Ruangan
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="history-selesai-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#history-selesai"
+                        type="button"
+                        role="tab"
+                        aria-controls="history-selesai"
+                        aria-selected="false">
+                    History Selesai Reservasi
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="reservasi-berjalan-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#reservasi-berjalan"
+                        type="button"
+                        role="tab"
+                        aria-controls="reservasi-berjalan"
+                        aria-selected="false">
+                    Reservasi Sedang Berjalan
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="roomTabsContent">
+            <div class="tab-pane fade show active" id="daftar-ruangan" role="tabpanel" aria-labelledby="daftar-ruangan-tab">
+                @await Html.PartialAsync("_RoomListPartial", Model.Rooms)
+            </div>
+            <div class="tab-pane fade" id="history-selesai" role="tabpanel" aria-labelledby="history-selesai-tab">
+                @await Html.PartialAsync("_FinishedReservationRoomPartial", Model.FinishedReservations)
+            </div>
+            <div class="tab-pane fade" id="reservasi-berjalan" role="tabpanel" aria-labelledby="reservasi-berjalan-tab">
+                @await Html.PartialAsync("_RunningReservationRoomPartial", Model.RunningReservations)
+            </div>
+        </div>
+    </div>
+</div>

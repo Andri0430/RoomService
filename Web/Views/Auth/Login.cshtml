@@ -1,0 +1,84 @@
+﻿@model Application.Dtos.AuthDto.LoginDto
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - RoomService</title>
+    <!-- Murni Hanya Menggunakan Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light d-flex justify-content-center align-items-center min-vh-100">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-9 col-md-7 col-lg-5 col-xl-4">
+
+                <!-- Card Login Minimalis -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-sm-5 bg-white">
+
+                    <!-- Logo & Judul Utama -->
+                    <div class="text-center mb-4">
+                        <div class="bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center fw-bold mb-3" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            RS
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">Selamat Datang</h4>
+                        <p class="text-muted small">Silakan masuk ke akun RoomService Anda</p>
+                    </div>
+
+                    <!-- Notifikasi Error (Hanya muncul jika tidak valid) -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger border-0 small mb-4" role="alert">
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>• @error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <!-- Form Login -->
+                    <form asp-action="Login" method="post" autocomplete="off">
+
+                        <!-- Input Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label small fw-semibold text-secondary">Email</label>
+                            <input asp-for="Email" class="form-control bg-light border-0 py-2.5 px-3" placeholder="admin@roomservice.com" required />
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Input Password -->
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label small fw-semibold text-secondary">Password</label>
+                            <input asp-for="Password" type="password" class="form-control bg-light border-0 py-2.5 px-3" placeholder="••••••••" required />
+                            <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Tombol Login -->
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-medium shadow-sm rounded-3">
+                            Masuk Ke Aplikasi
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <p class="text-center text-muted small mt-4 mb-0" style="font-size: 0.8rem;">
+                    &copy; 2026 RoomService. All rights reserved.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

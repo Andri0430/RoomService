@@ -1,0 +1,772 @@
+@using Application.Dtos
+@using Domain.Entities.Enums
+@model List<UserDto>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <div>
+        <h5 class="fw-semibold mb-1">
+            Daftar Pengguna
+        </h5>
+
+        <small class="text-muted">
+            Kelola akun admin dan staff
+        </small>
+    </div>
+
+    <button class="btn btn-primary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#modalTambahUser">
+
+        Tambah User
+    </button>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<div class="row mb-3">
+
+    <div class="col-md-4">
+
+        <div class="input-group input-group-sm">
+
+            <span class="input-group-text">
+                Cari
+            </span>
+
+            <input type="text"
+                   id="searchUsers"
+                   class="form-control"
+                   placeholder="Cari pengguna..." />
+
+        </div>
+
+    </div>
+
+    <div class="col-md text-end">
+
+        <small id="infoUsers"
+               class="text-muted">
+        </small>
+
+    </div>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="table-responsive">
+
+    <table id="tableUsers"
+           class="table table-hover align-middle">
+
+        <thead class="table-light">
+
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>No HP</th>
+                <th>Role</th>
+                <th class="text-center">
+                    Aksi
+                </th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var (user, index) in Model.Select((item, index) => (item, index + 1)))
+            {
+                <tr>
+
+                    <td>@index</td>
+
+                    <td>@user.Name</td>
+
+                    <td>@user.Email</td>
+
+                    <td>@user.PhoneNumber</td>
+
+                    <td>
+
+                        <span class="badge rounded-pill @(user.Role == UserRole.Admin
+                                                                                                                      ? "text-bg-primary"
+                                                                                                                      : "text-bg-secondary")">
+
+                            @user.Role
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <div class="btn-group btn-group-sm">
+
+                            <!-- EDIT -->
+
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditUser"
+                                    data-id="@user.Id"
+                                    data-name="@user.Name"
+                                    data-email="@user.Email"
+                                    data-phone="@user.PhoneNumber"
+                                    data-role="@((int)user.Role)">
+
+                                Edit
+
+                            </button>
+
+
+                            <!-- DELETE -->
+
+                            <button type="button"
+                                    class="btn btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalHapusUser"
+                                    data-id="@user.Id"
+                                    data-name="@user.Name">
+
+                                Hapus
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div class="modal fade"
+     id="modalTambahUser"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="formTambahUser">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Tambah Pengguna
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Nama
+                        </label>
+
+                        <input type="text"
+                               name="Name"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input type="email"
+                               name="Email"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            No HP
+                        </label>
+
+                        <input type="text"
+                               name="PhoneNumber"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Password
+                        </label>
+
+                        <input type="password"
+                               name="Password"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Role
+                        </label>
+
+                        <select name="Role"
+                                class="form-select">
+
+                            <option value="@((int)UserRole.Admin)">
+                                Admin
+                            </option>
+
+                            <option value="@((int)UserRole.Staff)">
+                                Staff
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-light"
+                            data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        Simpan
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade"
+     id="modalEditUser"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="formEditUser">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Edit Pengguna
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           id="editId"
+                           name="Id" />
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Nama
+                        </label>
+
+                        <input type="text"
+                               id="editName"
+                               name="Name"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input type="email"
+                               id="editEmail"
+                               name="Email"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            No HP
+                        </label>
+
+                        <input type="text"
+                               id="editPhone"
+                               name="PhoneNumber"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Password Baru
+                        </label>
+
+                        <input type="password"
+                               id="editPassword"
+                               name="Password"
+                               class="form-control"
+                               placeholder="Kosongkan jika tidak diubah" />
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Role
+                        </label>
+
+                        <select id="editRole"
+                                name="Role"
+                                class="form-select">
+
+                            <option value="@((int)UserRole.Admin)">
+                                Admin
+                            </option>
+
+                            <option value="@((int)UserRole.Staff)">
+                                Staff
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-light"
+                            data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        Simpan Perubahan
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade"
+     id="modalHapusUser"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="formHapusUser">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Hapus Pengguna
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body text-center">
+
+                    <input type="hidden"
+                           id="hapusId"
+                           name="id" />
+
+                    <p>
+
+                        Hapus pengguna
+                        <strong id="hapusNama"></strong> ?
+
+                    </p>
+
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+
+                    <button type="submit" class="btn btn-danger">
+                        Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeSearch();
+        initializeEditModal();
+        initializeDeleteModal();
+        handleCreateUser();
+        handleUpdateUser();
+        handleDeleteUser();
+    });
+
+
+    function initializeSearch() {
+
+        const table =
+            document.getElementById('tableUsers');
+
+        const search =
+            document.getElementById('searchUsers');
+
+        const info =
+            document.getElementById('infoUsers');
+
+        const rows =
+            Array.from(
+                table.querySelectorAll('tbody tr')
+            );
+
+        function refreshTable() {
+
+            const keyword =
+                search.value.toLowerCase();
+
+            let visible = 0;
+
+            rows.forEach(row => {
+
+                const isMatch =
+                    row.innerText
+                        .toLowerCase()
+                        .includes(keyword);
+
+                row.classList.toggle(
+                    'd-none',
+                    !isMatch
+                );
+
+                if (isMatch)
+                    visible++;
+            });
+
+            info.textContent =
+                `${visible} dari ${rows.length} data`;
+        }
+
+        search.addEventListener(
+            'input',
+            refreshTable
+        );
+
+        refreshTable();
+    }
+
+    function initializeEditModal() {
+
+        const modal =
+            document.getElementById('modalEditUser');
+
+        modal.addEventListener(
+            'show.bs.modal',
+            event => {
+
+                const button =
+                    event.relatedTarget;
+
+                document.getElementById('editId').value =
+                    button.dataset.id;
+
+                document.getElementById('editName').value =
+                    button.dataset.name;
+
+                document.getElementById('editEmail').value =
+                    button.dataset.email;
+
+                document.getElementById('editPhone').value =
+                    button.dataset.phone;
+
+                document.getElementById('editRole').value =
+                    button.dataset.role;
+
+                document.getElementById('editPassword').value =
+                    '';
+            }
+        );
+    }
+
+
+    function initializeDeleteModal() {
+
+        const modal =
+            document.getElementById('modalHapusUser');
+
+        modal.addEventListener(
+            'show.bs.modal',
+            event => {
+
+                const button =
+                    event.relatedTarget;
+
+                document.getElementById('hapusId').value =
+                    button.dataset.id;
+
+                document.getElementById('hapusNama').textContent =
+                    button.dataset.name;
+            }
+        );
+    }
+
+
+    async function submitAjax(url, formData) {
+
+        try {
+
+            const response = await fetch(url, {
+
+                method: 'POST',
+
+                body: formData
+            });
+
+            return await response.json();
+        }
+        catch {
+
+            return {
+
+                success: false,
+
+                message: 'Terjadi kesalahan server'
+            };
+        }
+    }
+
+
+    function handleCreateUser() {
+
+        const form =
+            document.getElementById('formTambahUser');
+
+        form.addEventListener(
+            'submit',
+            async function (e) {
+
+                e.preventDefault();
+
+                const formData =
+                    new FormData(form);
+
+                const result =
+                    await submitAjax(
+                        '/Admin/CreateUser',
+                        formData
+                    );
+
+                if (!result.success) {
+
+                    alert(result.message);
+                    return;
+                }
+
+                alert(result.message);
+
+                location.reload();
+            }
+        );
+    }
+
+
+
+    function handleUpdateUser() {
+
+        const form =
+            document.getElementById('formEditUser');
+
+        form.addEventListener(
+            'submit',
+            async function (e) {
+
+                e.preventDefault();
+
+                const formData =
+                    new FormData(form);
+
+                const result =
+                    await submitAjax(
+                        '/Admin/UpdateUser',
+                        formData
+                    );
+
+                if (!result.success) {
+
+                    alert(result.message);
+                    return;
+                }
+
+                alert(result.message);
+
+                location.reload();
+            }
+        );
+    }
+
+
+    function handleDeleteUser() {
+
+        const form =
+            document.getElementById('formHapusUser');
+
+        form.addEventListener(
+            'submit',
+            async function (e) {
+
+                e.preventDefault();
+
+                const formData =
+                    new FormData(form);
+
+                const result =
+                    await submitAjax(
+                        '/Admin/SoftDeleteUser',
+                        formData
+                    );
+
+                if (!result.success) {
+
+                    alert(result.message);
+                    return;
+                }
+
+                alert(result.message);
+
+                location.reload();
+            }
+        );
+    }
+
+</script>
+
+<script>
+    (function () {
+        function setupReliableTableSearch(tableId, searchId, infoId) {
+            const table = document.getElementById(tableId);
+            const search = document.getElementById(searchId);
+            const info = document.getElementById(infoId);
+
+            if (!table || !search || !info) {
+                return;
+            }
+
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+            function refreshTable() {
+                const keyword = search.value.trim().toLowerCase();
+                let visibleRows = 0;
+
+                rows.forEach(row => {
+                    const isMatch = row.innerText.toLowerCase().includes(keyword);
+                    row.classList.toggle('d-none', !isMatch);
+
+                    if (isMatch) {
+                        visibleRows++;
+                    }
+                });
+
+                info.textContent = `${visibleRows} dari ${rows.length} data`;
+            }
+
+            search.oninput = refreshTable;
+            refreshTable();
+        }
+
+        function initializeReliableSearch() {
+            setupReliableTableSearch('tableUsers', 'searchUsers', 'infoUsers');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeReliableSearch);
+        } else {
+            initializeReliableSearch();
+        }
+    })();
+</script>

@@ -1,0 +1,411 @@
+@model Web.ViewModels.StaffDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard Staff";
+    Layout = "~/Views/Shared/_Layout.Staff.cshtml";
+}
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-white">
+
+        <ul class="nav nav-tabs card-header-tabs"
+            id="staffTabs"
+            role="tablist">
+
+            <!-- TAB DAFTAR RUANGAN -->
+            <li class="nav-item" role="presentation">
+
+                <button class="nav-link active"
+                        id="daftar-ruangan-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#daftar-ruangan"
+                        type="button"
+                        role="tab"
+                        aria-controls="daftar-ruangan"
+                        aria-selected="true">
+
+                    Daftar Ruangan
+
+                </button>
+
+            </li>
+
+            <!-- TAB FORM RESERVASI -->
+            <li class="nav-item" role="presentation">
+
+                <button class="nav-link"
+                        id="form-reservasi-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#form-reservasi"
+                        type="button"
+                        role="tab"
+                        aria-controls="form-reservasi"
+                        aria-selected="false">
+
+                    Form Reservasi Ruangan
+
+                </button>
+
+            </li>
+
+            <!-- TAB HISTORY -->
+            <li class="nav-item" role="presentation">
+
+                <button class="nav-link"
+                        id="history-reservasi-room-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#history-reservasi-room"
+                        type="button"
+                        role="tab"
+                        aria-controls="history-reservasi-room"
+                        aria-selected="false">
+
+                    Riwayat Reservasi Ruangan Saya
+
+                </button>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="tab-content" id="staffTabsContent">
+
+            <!-- CONTENT DAFTAR RUANGAN -->
+            <div class="tab-pane fade show active"
+                 id="daftar-ruangan"
+                 role="tabpanel"
+                 aria-labelledby="daftar-ruangan-tab">
+
+                <div class="mb-3">
+
+                    <h6 class="mb-1 fw-semibold">
+                        Daftar Ruangan
+                    </h6>
+
+                    <div class="small text-muted">
+                        Pilih ruangan yang tersedia untuk kebutuhan reservasi.
+                    </div>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Ruangan</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model.Rooms != null && Model.Rooms.Any())
+                            {
+                                @foreach (var (room, index)
+                               in Model.Rooms.Select((item, index)
+                               => (item, index + 1)))
+                                {
+                                    <tr>
+
+                                        <td class="text-muted">
+                                            @index
+                                        </td>
+
+                                        <td class="fw-medium">
+                                            @room.RoomName
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+
+                                    <td colspan="2"
+                                        class="text-center text-muted">
+
+                                        Data ruangan belum tersedia.
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <!-- CONTENT FORM RESERVASI -->
+            <div class="tab-pane fade"
+                 id="form-reservasi"
+                 role="tabpanel"
+                 aria-labelledby="form-reservasi-tab">
+
+                <div class="mb-3">
+
+                    <h6 class="mb-1 fw-semibold">
+                        Form Reservasi Ruangan
+                    </h6>
+
+                    <div class="small text-muted">
+                        Satu ruangan hanya bisa di-booking satu kali
+                        pada tanggal yang sama.
+                    </div>
+
+                </div>
+
+                <form id="formReservasiRoom" class="row g-3">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Pilih Ruangan
+                        </label>
+
+                        <select name="RoomId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Pilih ruangan
+                            </option>
+
+                            @if (Model.Rooms != null && Model.Rooms.Any())
+                            {
+                                @foreach (var room in Model.Rooms)
+                                {
+                                    <option value="@room.Id">
+                                        @room.RoomName
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Tanggal Booking
+                        </label>
+
+                        <input name="BookedDateReservation"
+                               type="date"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Simpan Reservasi
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- CONTENT HISTORY -->
+            <div class="tab-pane fade"
+                 id="history-reservasi-room"
+                 role="tabpanel"
+                 aria-labelledby="history-reservasi-room-tab">
+
+                <div class="mb-3">
+
+                    <h6 class="mb-1 fw-semibold">
+                        Riwayat Reservasi Ruangan Saya
+                    </h6>
+
+                    <div class="small text-muted">
+                        Berikut daftar reservasi ruangan
+                        yang pernah dilakukan.
+                    </div>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Ruangan</th>
+                                <th>Tanggal Reservasi</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model.HistoryReservationRooms != null &&
+                           Model.HistoryReservationRooms.Any())
+                            {
+                                @foreach (var (history, index)
+                               in Model.HistoryReservationRooms
+                               .Select((item, index)
+                               => (item, index + 1)))
+                                {
+                                    var status =
+                                    history.BookedDateReservation.Date >= DateTime.Today
+                                    ? "Akan Datang"
+                                    : "Selesai";
+
+                                    var badgeClass =
+                                    history.BookedDateReservation.Date >= DateTime.Today
+                                    ? "bg-primary"
+                                    : "bg-success";
+
+                                    <tr>
+
+                                        <td class="text-muted">
+                                            @index
+                                        </td>
+
+                                        <td class="fw-medium">
+                                            @history.RoomName
+                                        </td>
+
+                                        <td>
+                                            @history.BookedDateReservation
+                                        </td>
+
+                                        <td>
+
+                                            <span class="badge @badgeClass">
+
+                                                @status
+
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+
+                                    <td colspan="4"
+                                        class="text-center text-muted">
+
+                                        Belum ada riwayat reservasi ruangan.
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function initializeReservationForm() {
+
+        const form =
+            document.getElementById('formReservasiRoom');
+
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener(
+            'submit',
+            async function (event) {
+
+                event.preventDefault();
+
+                const result =
+                    await sendReservationForm(form);
+
+                alert(result.message);
+
+                if (result.success) {
+
+                    form.reset();
+
+                    location.reload();
+
+                }
+
+            });
+    }
+
+    async function sendReservationForm(form) {
+
+        try {
+
+            const formData = new FormData(form);
+
+            const response =
+                await fetch('/Staff/CreateReservation', {
+                    method: 'POST',
+                    body: formData
+                });
+
+            return await response.json();
+
+        } catch {
+
+            return {
+                success: false,
+                message:
+                    'Terjadi kesalahan saat menyimpan reservasi.'
+            };
+
+        }
+    }
+
+    if (document.readyState === 'loading') {
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            initializeReservationForm
+        );
+
+    } else {
+
+        initializeReservationForm();
+
+    }
+
+</script>

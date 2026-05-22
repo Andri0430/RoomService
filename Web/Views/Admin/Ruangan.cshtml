@@ -1,0 +1,9 @@
+@model Web.ViewModels.RoomDashboardViewModel
+
+@{
+    ViewData["Title"] = "Ruangan";
+    Layout = "~/Views/Shared/_Layout.Admin.cshtml";
+    ViewData["ActiveMenu"] = "Ruangan";
+}
+
+@await Html.PartialAsync("_RoomTabContainerPartial", Model)
